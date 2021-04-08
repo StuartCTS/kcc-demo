@@ -79,7 +79,9 @@ kubectl wait -n cnrm-system \
 
 Create namespace for resources managed by kcc (can be anything) e.g.
 
+```
 kubectl create ns kcc
+```
 
 Annotate to control resources at project level:
 
@@ -87,3 +89,25 @@ Annotate to control resources at project level:
 kubectl annotate namespace \
  kcc cnrm.cloud.google.com/project-id="$PROJECT_ID"
 ```
+
+## Manage GCP resources
+
+Enable API [](samples/enable_pubsub.yaml)
+```
+kubectl apply -f samples/enable_pubsub.yaml -n kcc
+```
+
+Create the resource
+```
+kubectl apply -f samples/pubsub_topic.yaml -n kcc
+```
+
+View what's happeining with your resources
+
+```
+kubectl get events -n kcc
+```
+
+## Resources
+
+https://cloud.google.com/config-connector/docs/reference/overview

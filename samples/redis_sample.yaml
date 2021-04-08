@@ -1,0 +1,10 @@
+apiVersion: redis.cnrm.cloud.google.com/v1beta1
+kind: RedisInstance
+metadata:
+  name: redisinstance-sample
+  namespace: kcc
+spec:
+  displayName: Sample Redis Instance
+  region: europe-west2
+  tier: basic
+  memorySizeGb: 8
