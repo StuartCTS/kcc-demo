@@ -108,6 +108,14 @@ View what's happeining with your resources
 kubectl get events -n kcc
 ```
 
+Get all managed resources:
+```
+kubectl get gcp -n kcc
+```
+
+## Clean up
+
+
 ## Resources
 
 https://cloud.google.com/config-connector/docs/reference/overview
