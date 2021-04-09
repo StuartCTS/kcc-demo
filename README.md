@@ -1,12 +1,15 @@
 # kcc-demo
-Using the GCP Config Connector to provision GCP infra from k8s
+Using the GCP Config Connector (KCC) to provision GCP infra from k8s.
+
+This repo show how to provision GCP infra from a k8s cluster outside of GCP (i.e. on-GKE). Note the approach below is purely for demoing from a local cluster - it should NOT be seen as a secure way of deploying infra; for that see the installation on GKE clusters using Workload Identity. It does however demonstrate the principle of using the k8s control plane and declarative methods to control the state of infrastructure.
 
 ## Requirements
-`kubectl` access to k8s cluster (tested with `Docker Desktop for Mac`, but `kind`, `Minikube` should all be ok) 
+`kubectl` access to k8s cluster (tested with `Docker Desktop for Mac`, but `kind`, `Minikube`, `k3s` etc should all be ok).
+
+NOTE: KCC can be pretty resource hungry - if demoing on local machine eg Docker For Desktop k8s on Mac - ensure you have enough CPU/RAM assigned
 
 Ability to create roles i.e. 
-`kubectl auth can-i create roles` 
-- answer should be 'yes'
+`kubectl auth can-i create roles` - answer should be 'yes'
 
 Access to an appropriate GCP project via `gcloud` with ability to create service accounts, enable APIs etc
 
@@ -114,6 +117,10 @@ kubectl get gcp -n kcc
 ```
 
 ## Clean up
+
+Delete all managed resources first 
+
+(note if you want to keep the resources running for whichever reason you must first 'unmanage' them from KCC)
 
 
 ## Resources
