@@ -154,7 +154,7 @@ Get all managed resources:
 kubectl get gcp -n kcc
 ```
 
-To list resources you have created e.g. stotrage buckets:
+To list resources you have created e.g. storage buckets:
 ```
 kubectl get storagebuckets -n kcc
 
