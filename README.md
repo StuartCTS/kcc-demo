@@ -144,11 +144,22 @@ Get all managed resources:
 kubectl get gcp -n kcc
 ```
 
+To list resources you have created e.g. stotrage buckets:
+```
+kubectl get storagebuckets -n kcc
+
+kubectl describe storagebucket stuart-dev-example-01-b1 -n kcc
+```
+
+KCC is eventually consistent - i.e. there may be some time between a mutating change being applied and being visible. 
+
+The reconciliation loop of the KCC is around 10 mins (not currently chanegable?) - so if you mod stuff directly in GCP, it will not resolve to the definition of state in your custer for a period of a few mins at least - you can always force the behaviour by re-performing the `kubectl apply` if you want to demonstrate config drift being automatically remediated by your cluster.
+
 ## Clean up
 
 Delete all managed resources first 
 
-(note if you want to keep the resources running for whichever reason you must first 'unmanage' them from KCC)
+(note if you want to keep the resources running for whichever reason you must first 'unmanage' them from KCC - unless you had tagged them as 'abandon')
 
 
 ## Resources

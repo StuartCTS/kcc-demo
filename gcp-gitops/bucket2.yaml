@@ -4,7 +4,7 @@
     annotations:
       cnrm.cloud.google.com/force-destroy: "true"
     labels:
-      label-one: "value-two"
+      label-one: "value-banana"
     # StorageBucket names must be globally unique. Replace ${PROJECT_ID?} with your project ID.
     name: stuart-dev-example-01-b2
   spec:
