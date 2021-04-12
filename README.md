@@ -172,6 +172,16 @@ Delete all managed resources first
 (note if you want to keep the resources running for whichever reason you must first 'unmanage' them from KCC - unless you had tagged them as 'abandon')
 
 
+To remove the KCC CRDS and operators etc:
+
+
+```
+kubectl delete ConfigConnector configconnector.core.cnrm.cloud.google.com \
+    --wait=true
+
+kubectl delete -f operator-system/configconnector-operator.yaml  --wait=true
+```
+
 ## Resources
 
 https://cloud.google.com/config-connector/docs/reference/overview
