@@ -40,3 +40,10 @@ error in 'config-connector' version '1.45.0': error getting unstructured: error 
 See image in dir - possibly related?
 
 
+Same with bulk export:
+
+```
+config-connector bulk-export --project $PROJECT_ID
+error in 'config-connector' version '1.45.0': error exporting asset inventory: error response from exportassets request: googleapi: Error 403: Request denied by Cloud IAM., forbidden
+```
+
