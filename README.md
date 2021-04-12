@@ -1,12 +1,13 @@
 # kcc-demo
 Using the GCP Config Connector (KCC) to provision GCP infra from k8s.
 
-This repo show how to provision GCP infra from a k8s cluster outside of GCP (i.e. on-GKE). Note the approach below is purely for demoing from a local cluster - it should NOT be seen as a secure way of deploying infra; for that see the installation on GKE clusters using Workload Identity. It does however demonstrate the principle of using the k8s control plane and declarative methods to control the state of infrastructure.
+This repo show how to provision GCP infra from a k8s cluster outside of GCP (i.e. non-GKE). Note the approach below is purely for demoing from a local cluster - it should NOT be seen as a secure way of deploying infra; for that see the installation on GKE clusters using Workload Identity. It does however demonstrate the principle of using the k8s control plane and declarative methods to control the state of infrastructure.
+
 
 ## Requirements
 `kubectl` access to k8s cluster (tested with `Docker Desktop for Mac`, but `kind`, `Minikube`, `k3s` etc should all be ok).
 
-NOTE: KCC can be pretty resource hungry - if demoing on local machine eg Docker For Desktop k8s on Mac - ensure you have enough CPU/RAM assigned
+NOTE: KCC can be pretty resource hungry - if demoing on local machine eg Docker For Desktop k8s on Mac - ensure you have enough CPU/RAM assigned (suggest min 4CPUs/8Gb). Otherwise you may be better using a GKE cluster specc'd appropriately
 
 Ability to create roles i.e. 
 `kubectl auth can-i create roles` - answer should be 'yes'
@@ -68,16 +69,36 @@ kubectl create secret generic $SECRET_NAME \
     --from-file key.json \
     --namespace cnrm-system
 ```
+
+Delete the key
+```
+rm key.json
+```
+
 Install the KCC operator:
 ```
 kubectl apply -f operator-system/configconnector-operator.yaml
 ```
+
+Configure the operator - amend the [](configconnector.yaml) file to include a reference to the secret you created in the `cnrm-system` ns, and apply as follows:
+```
+kubectl apply -f configconnector.yaml
+```
+
 
 Check all is ok (make sure containers all started)
 
 ```
 kubectl wait -n cnrm-system \
       --for=condition=Ready pod --all
+```
+You should see
+```
+pod/cnrm-controller-manager-0 condition met
+pod/cnrm-deletiondefender-0 condition met
+pod/cnrm-resource-stats-recorder-848dbbf897-jhhmq condition met
+pod/cnrm-webhook-manager-5ccc747594-78gbh condition met
+pod/cnrm-webhook-manager-5ccc747594-zmbxl condition met
 ```
 
 Create namespace for resources managed by kcc (can be anything) e.g.
@@ -86,12 +107,19 @@ Create namespace for resources managed by kcc (can be anything) e.g.
 kubectl create ns kcc
 ```
 
-Annotate to control resources at project level:
+Annotate to control resources at project level, eg:
 
 ```
-kubectl annotate namespace \
- kcc cnrm.cloud.google.com/project-id="$PROJECT_ID"
+kcc-demo % kubectl annotate namespace \
+ kcc cnrm.cloud.google.com/project-id="YOUR_PROJECT_ID"
 ```
+
+Should be good to go at this point. You can see the types of GCP resources you are able to create via 
+```
+ kubectl get crds | grep '.cnrm.cloud.google.com'
+ ```
+or look at the resources documentation [here](https://cloud.google.com/config-connector/docs/reference/overview)
+
 
 ## Manage GCP resources
 
@@ -105,7 +133,7 @@ Create the resource
 kubectl apply -f samples/pubsub_topic.yaml -n kcc
 ```
 
-View what's happeining with your resources
+View what's happening with your resources
 
 ```
 kubectl get events -n kcc
