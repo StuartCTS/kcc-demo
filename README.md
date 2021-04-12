@@ -118,6 +118,10 @@ Should be good to go at this point. You can see the types of GCP resources you a
 ```
  kubectl get crds | grep '.cnrm.cloud.google.com'
  ```
+ or 
+ ```
+ kubectl get crds --selector cnrm.cloud.google.com/managed-by-kcc=true
+ ```
 or look at the resources documentation [here](https://cloud.google.com/config-connector/docs/reference/overview)
 
 
@@ -132,6 +136,12 @@ Create the resource
 ```
 kubectl apply -f samples/pubsub_topic.yaml -n kcc
 ```
+
+Monitor it to see if it came up ok:
+```
+
+```
+
 
 View what's happening with your resources
 
