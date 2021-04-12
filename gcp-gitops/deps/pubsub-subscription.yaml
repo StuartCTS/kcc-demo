@@ -4,4 +4,4 @@ metadata:
   name: pubsubsubscription-referencing-topic
 spec:
   topicRef:
-    name: sbTopic
+    name: sbtopic
