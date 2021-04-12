@@ -1,24 +1,24 @@
-  apiVersion: storage.cnrm.cloud.google.com/v1beta1
-  kind: StorageBucket
-  metadata:
-    annotations:
-      cnrm.cloud.google.com/force-destroy: "true"
-      cnrm.cloud.google.com/deletion-policy: abandon
-    labels:
-      label-one: "value-kumquat"
-    # StorageBucket names must be globally unique. Replace ${PROJECT_ID?} with your project ID.
-    name: stuart-dev-example-01-b2
-  spec:
-    bucketPolicyOnly: true
-    lifecycleRule:
-      - action:
-          type: Delete
-        condition:
-          age: 7
-    versioning:
-      enabled: true
-    cors:
-      - origin: ["http://example.appspot.com"]
-        responseHeader: ["Content-Type"]
-        method: ["GET", "HEAD", "DELETE"]
-        maxAgeSeconds: 3600
+  # apiVersion: storage.cnrm.cloud.google.com/v1beta1
+  # kind: StorageBucket
+  # metadata:
+  #   annotations:
+  #     cnrm.cloud.google.com/force-destroy: "true"
+  #     cnrm.cloud.google.com/deletion-policy: abandon
+  #   labels:
+  #     label-one: "value-kumquat"
+  #   # StorageBucket names must be globally unique. Replace ${PROJECT_ID?} with your project ID.
+  #   name: stuart-dev-example-01-b2
+  # spec:
+  #   bucketPolicyOnly: true
+  #   lifecycleRule:
+  #     - action:
+  #         type: Delete
+  #       condition:
+  #         age: 7
+  #   versioning:
+  #     enabled: true
+  #   cors:
+  #     - origin: ["http://example.appspot.com"]
+  #       responseHeader: ["Content-Type"]
+  #       method: ["GET", "HEAD", "DELETE"]
+  #       maxAgeSeconds: 3600
