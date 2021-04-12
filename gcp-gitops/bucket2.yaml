@@ -5,7 +5,7 @@
       cnrm.cloud.google.com/force-destroy: "true"
       cnrm.cloud.google.com/deletion-policy: abandon
     labels:
-      label-one: "value-banana"
+      label-one: "value-kumquat"
     # StorageBucket names must be globally unique. Replace ${PROJECT_ID?} with your project ID.
     name: stuart-dev-example-01-b2
   spec:
