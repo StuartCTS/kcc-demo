@@ -4,7 +4,7 @@ metadata:
   name: redisinstance-sample
   namespace: kcc
 spec:
-  displayName: Sample Redis Instance
+  displayName: Sample KCC-created Redis Instance
   region: europe-west2
-  tier: basic
-  memorySizeGb: 8
+  tier: BASIC
+  memorySizeGb: 1
