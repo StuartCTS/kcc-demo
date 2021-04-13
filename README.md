@@ -9,6 +9,9 @@ Using the GCP (Kubernetes) Config Connector (KCC) to provision GCP infra directl
   - [Configure cluster](#configure-cluster)
   - [Managing GCP resources](#managing-gcp-resources)
     - [Creating a managed resource](#creating-a-managed-resource)
+    - [Updating a resource](#updating-a-resource)
+    - [Deleting a resource](#deleting-a-resource)
+  - [General stuff for KCC](#general-stuff-for-kcc)
   - [Clean up](#clean-up)
   - [Resources](#resources)
 
@@ -141,24 +144,61 @@ or look at the resources documentation [here](https://cloud.google.com/config-co
 ## Managing GCP resources
 
 ### Creating a managed resource
-Given the correct project API permissions, you can now use 
+Given the correct project API permissions, you can now use `kubectl` operations to create, manage, modify and delete GCP resources. Firstly, make sure the correct APIs are enabled for the resources you are considering creating - wiethr via the console or if you wish, via KCC, e.g. for pubsub
 
 Enable API [](samples/enable_pubsub.yaml)
 ```
 kubectl apply -f samples/enable_pubsub.yaml -n kcc
 ```
 
-Create the resource
+(To view APIs you enabled using KCC, use ```kubectl get service.serviceusage -n kcc ```)
+
+Check the API has been enabled: ```kubectl describe service.serviceusage pubsub.googleapis.com -n kcc```
+
+Then create the resource:
 ```
-kubectl apply -f samples/pubsub_topic.yaml -n kcc
+kubectl apply -f examples/pubsub_topic.yaml -n kcc
 ```
 
-Monitor it to see if it came up ok:
+See all objects of that type in the namespace
+```
+kubectl get pubsubtopic -n kcc
+NAME        AGE   READY   STATUS     STATUS AGE
+kcc-topic   64s   True    UpToDate   62s
 ```
 
+Examine it to see if it came up ok:
+```
+kubectl describe pubsubtopic kcc-topic -n kcc
 ```
 
+You should now see your desired resource in the console also
 
+### Updating a resource
+You can demonstrate how the k8s reconciliation loop of the ConfigConnector is used to resolve the declared state in the cluster with the actual resource by modifying the yaml used to recreate - e.g. add a label to the existing pubsub topic:
+```
+apiVersion: pubsub.cnrm.cloud.google.com/v1beta1
+kind: PubSubTopic
+metadata:
+  labels:
+    env: test
+    director: kubrick
+  name: kcc-topic
+```
+Re-apply the yaml - do a `describe` to see that the object in the cluster has been updated with the  new label. You should see the updated label next to the topic (you may need to refresh the console).
+
+Now _in the console_ - delete the label you just added to the topic. Over time, the ConfigConnector controller will check the status of the resource it is managing, and will attempt to resolve any discrepancies it discovers - in this case, the removed label. (Unfortunately, the default polling period is 10mins, so you may have to wait a while before this gets resolved - but eventually the label will re-appear so that the resource matches the definition in the cluster -i.e. it is being _managed_ by KCC.
+
+Note not all properties can be altered in this fashion, depending on whether they are deemed immutable
+
+### Deleting a resource
+Just delete the resource like any k8s resource, i.e.
+```
+kubectl delete pubsubtopic kcc-topic -n kcc
+```
+*This will result in the deletion of the resource itself on GCP*
+
+## General stuff for KCC
 View what's happening with your resources
 
 ```
