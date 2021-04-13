@@ -47,3 +47,4 @@ config-connector bulk-export --project $PROJECT_ID
 error in 'config-connector' version '1.45.0': error exporting asset inventory: error response from exportassets request: googleapi: Error 403: Request denied by Cloud IAM., forbidden
 ```
 
+Also attempted by using appropriate `--oauth2-token` but no joy :-(

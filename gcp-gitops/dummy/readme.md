@@ -1,1 +1,1 @@
-Point Argo apps to for non-gitops
+Point Argo apps to this for non-gitops

@@ -1,0 +1,1 @@
+Shows an example of _referenced_ resources - i.e. one declared resource referring to the existence of another, in this case a pubsub topic and subscription to that topic.

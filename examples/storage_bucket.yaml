@@ -3,22 +3,22 @@
   kind: StorageBucket
   metadata:
     annotations:
-      cnrm.cloud.google.com/force-destroy: "false"
+      cnrm.cloud.google.com/force-destroy: "false" # true deletes the contents of the bucket
     labels:
-      label-one: "value-one"
-    # StorageBucket names must be globally unique. Replace ${PROJECT_ID?} with your project ID.
-    name: stuart-dev-example-01-sample
+      label-sample: "sample-value"
+    # StorageBucket names must be globally unique. use project id
+    name: stuart-dev-example-01-kcc-bucket
   spec:
     bucketPolicyOnly: true
     lifecycleRule:
       - action:
           type: Delete
         condition:
-          age: 7
+          age: 28
     versioning:
-      enabled: true
-    cors:
-      - origin: ["http://example.appspot.com"]
-        responseHeader: ["Content-Type"]
-        method: ["GET", "HEAD", "DELETE"]
-        maxAgeSeconds: 3600
+      enabled: false
+    # cors:
+    #   - origin: ["http://example.appspot.com"]
+    #     responseHeader: ["Content-Type"]
+    #     method: ["GET", "HEAD", "DELETE"]
+    #     maxAgeSeconds: 3600

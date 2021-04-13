@@ -1,3 +1,5 @@
+#  Sets up the configconnector in 'cluster;' mode - for other options
+#  i.e namespaced - see docs
 apiVersion: core.cnrm.cloud.google.com/v1beta1
 kind: ConfigConnector
 metadata:
