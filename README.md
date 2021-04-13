@@ -1,11 +1,25 @@
 # kcc-demo
-Using the GCP Config Connector (KCC) to provision GCP infra from k8s.
+Using the GCP (Kubernetes) Config Connector (KCC) to provision GCP infra directly from k8s.
 
-This repo show how to provision GCP infra from a k8s cluster outside of GCP (i.e. non-GKE). Note the approach below is purely for demoing from a local cluster - it should NOT be seen as a secure way of deploying infra; for that see the installation on GKE clusters using Workload Identity. It does however demonstrate the principle of using the k8s control plane and declarative methods to control the state of infrastructure.
+- [kcc-demo](#kcc-demo)
+  - [Introduction](#introduction)
+  - [Prerequisites](#prerequisites)
+  - [Before you begin](#before-you-begin)
+  - [Configure target GCP project](#configure-target-gcp-project)
+  - [Configure cluster](#configure-cluster)
+  - [Managing GCP resources](#managing-gcp-resources)
+    - [Creating a managed resource](#creating-a-managed-resource)
+  - [Clean up](#clean-up)
+  - [Resources](#resources)
+
+## Introduction
+This repo show how to provision GCP infra from a k8s cluster outside of GCP (i.e. non-GKE). Note the approach below is purely for demoing from a local cluster - it should NOT be seen as a secure way of deploying infra in production envs; for that see the installation on GKE clusters using Workload Identity. It does however demonstrate the principle of using the k8s control plane and declarative methods to control the state of infrastructure. In particular, we can demonstrate how the principle of how [Kubernetes Controller loops](https://kubernetes.io/docs/concepts/architecture/controller/) can be used to maintain state of objects both inside and outside of k8s clusters. Combining with GitOps CD tools such as ArgoCD, we can show how we can control infrastructure state directly from Git using the KCC.
+
+This demos controlling resources at the _project_ level - though this approach can be used to control resources at folder and Org levels.
 
 
-## Requirements
-`kubectl` access to k8s cluster (tested with `Docker Desktop for Mac`, but `kind`, `Minikube`, `k3s` etc should all be ok).
+## Prerequisites
+`kubectl` access to k8s cluster (tested with `Docker Desktop for Mac`, but `kind`, `minikube`, `k3s` etc should all be ok).
 
 NOTE: KCC can be pretty resource hungry - if demoing on local machine eg Docker For Desktop k8s on Mac - ensure you have enough CPU/RAM assigned (suggest min 4CPUs/8Gb). Otherwise you may be better using a GKE cluster specc'd appropriately
 
@@ -29,10 +43,10 @@ SECRET_NAME=gcp-cc-secret
 Ensure access via `gcloud` and current context
 `gcloud config list`
 
-Enable API
+Enable resource manager API
 `gcloud services enable cloudresourcemanager.googleapis.com`
 
-Create a service account for creds used by CC - note requires 'owner' or 'editor' role
+Create a service account for creds used by KCC - note requires 'owner' or 'editor' role (editor appears fine for project level control)
 
 ```
 gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME
@@ -50,8 +64,8 @@ gcloud iam service-accounts keys create --iam-account \
 ```
 
 ## Configure cluster
-
-See https://cloud.google.com/config-connector/docs/how-to/install-other-kubernetes - (note this is different for GKE clusters as these can use Workload Identity - see appropriate docs)
+See https://cloud.google.com/config-connector/docs/how-to/install-other-kubernetes - (note this is different for GKE clusters as these can use Workload Identity - see appropriate docs). The following 
+works ok on a local Docker/k8s single node cluster
 
 Pull the latest distribution of the GCP Config Connector: 
 
@@ -61,7 +75,7 @@ gsutil cp gs://configconnector-operator/latest/release-bundle.tar.gz release-bun
 tar zxvf release-bundle.tar.gz
 ```
 
-Create a namespace for the kcc - this _must_ be named `cnrm-system`:
+Create a namespace for the kcc - this _must_ be named `cnrm-system` - and add the secret you created from the above service account:
 ```
 kubectl create namespace cnrm-system 
 
@@ -70,7 +84,7 @@ kubectl create secret generic $SECRET_NAME \
     --namespace cnrm-system
 ```
 
-Delete the key
+Delete the key(!)
 ```
 rm key.json
 ```
@@ -84,7 +98,6 @@ Configure the operator - amend the [](configconnector.yaml) file to include a re
 ```
 kubectl apply -f configconnector.yaml
 ```
-
 
 Check all is ok (make sure containers all started)
 
@@ -107,14 +120,14 @@ Create namespace for resources managed by kcc (can be anything) e.g.
 kubectl create ns kcc
 ```
 
-Annotate to control resources at project level, eg:
+Annotate this ns to control resources at project level, eg:
 
 ```
 kcc-demo % kubectl annotate namespace \
  kcc cnrm.cloud.google.com/project-id="YOUR_PROJECT_ID"
 ```
 
-Should be good to go at this point. You can see the types of GCP resources you are able to create via 
+Should be good to go at this point. You can see the types of GCP resources you are able to create with KCC via 
 ```
  kubectl get crds | grep '.cnrm.cloud.google.com'
  ```
@@ -125,7 +138,10 @@ Should be good to go at this point. You can see the types of GCP resources you a
 or look at the resources documentation [here](https://cloud.google.com/config-connector/docs/reference/overview)
 
 
-## Manage GCP resources
+## Managing GCP resources
+
+### Creating a managed resource
+Given the correct project API permissions, you can now use 
 
 Enable API [](samples/enable_pubsub.yaml)
 ```
