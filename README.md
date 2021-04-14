@@ -12,7 +12,11 @@ Using the GCP (Kubernetes) Config Connector (KCC) to provision GCP infra directl
     - [Updating a resource](#updating-a-resource)
     - [Deleting a resource](#deleting-a-resource)
   - [General stuff for KCC](#general-stuff-for-kcc)
+  - [GitOps managed Infra](#gitops-managed-infra)
+    - [Using ArgoCD](#using-argocd)
+    - [Using Google ConfigSync](#using-google-configsync)
   - [Clean up](#clean-up)
+  - [Future ideas](#future-ideas)
   - [Resources](#resources)
 
 ## Introduction
@@ -236,6 +240,22 @@ KCC is eventually consistent - i.e. there may be some time between a mutating ch
 
 The reconciliation loop of the KCC is around 10 mins (not currently changeable?) - so if you mod stuff directly in GCP, it will not resolve to the definition of state in your custer for a period of a few mins at least - you can always force the behaviour by re-performing the `kubectl apply` if you want to demonstrate config drift being automatically remediated by your cluster.
 
+## GitOps managed Infra  
+### Using ArgoCD
+If you have ArgoCD setup, you can easily use this to manage resources in kcc - the [ArgoCD quickstart]()https://argo-cd.readthedocs.io/en/stable/getting_started/ docs should be sufficient for your cluster (this has been tested with ArgoCD running on the same cluster as KCC, but no reason why it couldn't be hosted elsewhere). For demo purposes, using argo's reconciliation loop also gets round the issue of waiting for KCC to resolve (the default argo reconciliation is 3mins). 
+
+Firstly - make sure you have forked this repo (if not done already) to somewhere where you have commit access, as you will be wanting to commit changes and see them reflected.
+
+For convenience a set of commands needed for a local cluster are included [here](examples/argo-test/argo_install.txt) - create a simple argo application with defaults pointing to the [argo-test](examples/argo-test/) folder to setup a deployment of the nginx [yaml](examples/argo-test/nginx_deployment.yaml). Turn on auto-sync, and test that changing say, the number of replicas in th edeployment is reflected on your cluster.
+
+If that all works ok, you should be good to create an application that points to the [](gcp-gitops/buckets) folder - the target namespace needs to be the one you annotated for usage by KCC as above. You should see argo deploy the KCC definitions as above and see the infra being managed - similarly, pushing changes to the git repo will be reflected the next time argo syncs the changes from the repo to you cluster. 
+
+### Using Google ConfigSync
+As a GCP alternative, [ConfigSync](https://cloud.google.com/kubernetes-engine/docs/add-on/config-sync) could be installed to manage the repo syncing - however its primary use case is for synchronizing configurations and policies. You need to define a separate repo, but you can use it to manage to manage GCP infra in the same fashion.
+
+ConfigController and ConfigSync are combined in this way in [Anthos Config Management](https://cloud.google.com/anthos-config-management/docs/overview) along with BinAuthz, PolicyController etc.
+
+
 ## Clean up
 
 Delete all managed resources first 
@@ -251,5 +271,13 @@ kubectl delete ConfigConnector configconnector.core.cnrm.cloud.google.com \
 kubectl delete -f operator-system/configconnector-operator.yaml  --wait=true
 ```
 
+## Future ideas
+- Build this demo on GKE using WorkloadIdentity and KCC AddOn
+- Use ConfigSync in place of ArgoCD
+- Do this multi-cluster across GCP and Azure/AWS using _either_ 
+  - Anthos managed clusters and ACM  (see https://seroter.com/2021/01/12/how-gitops-and-the-krm-make-multi-cloud-less-scary/)
+  - GKE + AKS/AWS clusters, ArgoCD and appropriate AWS/AKS service operators
+  
+  
 ## Resources
 https://cloud.google.com/config-connector/docs/reference/overview
