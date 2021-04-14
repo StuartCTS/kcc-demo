@@ -189,7 +189,7 @@ Re-apply the yaml - do a `describe` to see that the object in the cluster has be
 
 Now _in the console_ - delete the label you just added to the topic. Over time, the ConfigConnector controller will check the status of the resource it is managing, and will attempt to resolve any discrepancies it discovers - in this case, the removed label. (Unfortunately, the default polling period is 10mins, so you may have to wait a while before this gets resolved - but eventually the label will re-appear so that the resource matches the definition in the cluster -i.e. it is being _managed_ by KCC.
 
-Note not all properties can be altered in this fashion, depending on whether they are deemed immutable
+Note: not all properties can be altered in this fashion, depending on whether they are deemed immutable, or indeed whether operations are simply not allowed e.g. you can _increase_ the storage for a PostgreSQL instead, but not reduce it (you need to delete/recreate).
 
 ### Deleting a resource
 Just delete the resource like any k8s resource, i.e.
@@ -197,6 +197,21 @@ Just delete the resource like any k8s resource, i.e.
 kubectl delete pubsubtopic kcc-topic -n kcc
 ```
 *This will result in the deletion of the resource itself on GCP*
+
+If you don't want the deletion of the manged resource object to result in the deletion of the _actual_ resource, you need to _unmanage_ the resource from KCC - you do this by adding the following to your resource yam definition:
+
+```cnrm.cloud.google.com/deletion-policy: abandon```
+
+i.e.
+```
+apiVersion: pubsub.cnrm.cloud.google.com/v1beta1
+kind: PubSubTopic
+metadata:
+  annotations:
+    cnrm.cloud.google.com/deletion-policy: abandon
+  labels:
+...
+```
 
 ## General stuff for KCC
 View what's happening with your resources
@@ -237,5 +252,4 @@ kubectl delete -f operator-system/configconnector-operator.yaml  --wait=true
 ```
 
 ## Resources
-
 https://cloud.google.com/config-connector/docs/reference/overview
