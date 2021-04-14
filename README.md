@@ -10,8 +10,11 @@ Using the GCP (Kubernetes) Config Connector (KCC) to provision GCP infra directl
   - [Managing GCP resources](#managing-gcp-resources)
     - [Creating a managed resource](#creating-a-managed-resource)
     - [Updating a resource](#updating-a-resource)
+    - [Dependent Resources](#dependent-resources)
+    - [Reverse engineering existing resources into YAML](#reverse-engineering-existing-resources-into-yaml)
     - [Deleting a resource](#deleting-a-resource)
   - [General stuff for KCC](#general-stuff-for-kcc)
+  - [Troubleshooting](#troubleshooting)
   - [GitOps managed Infra](#gitops-managed-infra)
     - [Using ArgoCD](#using-argocd)
     - [Using Google ConfigSync](#using-google-configsync)
@@ -195,6 +198,14 @@ Now _in the console_ - delete the label you just added to the topic. Over time, 
 
 Note: not all properties can be altered in this fashion, depending on whether they are deemed immutable, or indeed whether operations are simply not allowed e.g. you can _increase_ the storage for a PostgreSQL instead, but not reduce it (you need to delete/recreate).
 
+### Dependent Resources  
+Resources can be declared with references to other resources - see the [](gcp-gitops/deps) folder for an example of a pubsub subscription referencing an existing topic
+
+### Reverse engineering existing resources into YAML
+In principle, it should be possible to export existing GCP resources into yaml, to ten subsequently impor and manage under KCC. However this was not seen to work due ot what appears to be an IAM related issue and Cloud ASset manager - see [notes](export-WIP/export-import%20WIP.md) to reproduce. 
+
+This could potentially be very powerful for reverse engineering manually created infra e.g for PoCs or demos and then allowing for it to be spun up automatically from KCC - however without testing this remains an unknown in terms of limitations.
+
 ### Deleting a resource
 Just delete the resource like any k8s resource, i.e.
 ```
@@ -240,6 +251,12 @@ KCC is eventually consistent - i.e. there may be some time between a mutating ch
 
 The reconciliation loop of the KCC is around 10 mins (not currently changeable?) - so if you mod stuff directly in GCP, it will not resolve to the definition of state in your custer for a period of a few mins at least - you can always force the behaviour by re-performing the `kubectl apply` if you want to demonstrate config drift being automatically remediated by your cluster.
 
+
+## Troubleshooting
+As mentioned, KCC can be very resource hungry - sometimes its quicker just to drop and restart the cluster if having memory or timeout issues.
+
+For general stuff - https://cloud.google.com/config-connector/docs/troubleshooting
+
 ## GitOps managed Infra  
 ### Using ArgoCD
 If you have ArgoCD setup, you can easily use this to manage resources in kcc - the [ArgoCD quickstart]()https://argo-cd.readthedocs.io/en/stable/getting_started/ docs should be sufficient for your cluster (this has been tested with ArgoCD running on the same cluster as KCC, but no reason why it couldn't be hosted elsewhere). For demo purposes, using argo's reconciliation loop also gets round the issue of waiting for KCC to resolve (the default argo reconciliation is 3mins). 
@@ -277,7 +294,8 @@ kubectl delete -f operator-system/configconnector-operator.yaml  --wait=true
 - Do this multi-cluster across GCP and Azure/AWS using _either_ 
   - Anthos managed clusters and ACM  (see https://seroter.com/2021/01/12/how-gitops-and-the-krm-make-multi-cloud-less-scary/)
   - GKE + AKS/AWS clusters, ArgoCD and appropriate AWS/AKS service operators
+- Get assistance from Platform Eng to attempt to resolve permissions issue with reverse engineering assets
   
-  
+
 ## Resources
 https://cloud.google.com/config-connector/docs/reference/overview
