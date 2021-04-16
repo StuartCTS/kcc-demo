@@ -9,4 +9,4 @@ spec:
   displayName: Sample KCC-created Redis Instance
   region: europe-west2
   tier: BASIC
-  memorySizeGb: 1
+  memorySizeGb: 2

@@ -5,16 +5,17 @@
     annotations:
       cnrm.cloud.google.com/force-destroy: "false" # true deletes the contents of the bucket
     labels:
-      label-sample: "sample-value"
+      label-sample: "sample-banana"
     # StorageBucket names must be globally unique. use project id
     name: stuart-dev-example-01-kcc-bucket
+    namespace: kcc
   spec:
     bucketPolicyOnly: true
     lifecycleRule:
       - action:
           type: Delete
         condition:
-          age: 28
+          age: 14
     versioning:
       enabled: false
     # cors:

@@ -263,7 +263,7 @@ If you have ArgoCD setup, you can easily use this to manage resources in kcc - t
 
 Firstly - make sure you have forked this repo (if not done already) to somewhere where you have commit access, as you will be wanting to commit changes and see them reflected.
 
-For convenience a set of commands needed for a local cluster are included [here](examples/argo-test/argo_install.txt) - create a simple argo application with defaults pointing to the [argo-test](examples/argo-test/) folder to setup a deployment of the nginx [yaml](examples/argo-test/nginx_deployment.yaml). Turn on auto-sync, and test that changing say, the number of replicas in th edeployment is reflected on your cluster.
+For convenience a set of commands needed for a local cluster are included [here](examples/argo-test/argo_install.txt) - create a simple argo application with defaults pointing to the [argo-test](examples/argo-test/) folder to setup a deployment of the nginx [yaml](examples/argo-test/nginx_deployment.yaml). Turn on auto-sync, and test that changing say, the number of replicas in th deployment is reflected on your cluster.
 
 If that all works ok, you should be good to create an application that points to the [](gcp-gitops/buckets) folder - the target namespace needs to be the one you annotated for usage by KCC as above. You should see argo deploy the KCC definitions as above and see the infra being managed - similarly, pushing changes to the git repo will be reflected the next time argo syncs the changes from the repo to you cluster. 
 
