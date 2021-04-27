@@ -14,3 +14,23 @@ argocd login localhost
 argocd account update-password
 
 https://localhost:443
+
+# cluster creds
+https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication#environments-without-gcloud
+
+# To add a GKE cluster (note ths works when argo itself is resident on GKE)
+# this approach uses KSA as per  https://github.com/argoproj/argo-cd/issues/3027 - on _target_ cluster:
+
+kubectl apply -f ../kcc/argo-roles.yaml
+
+# use info from sa to construct config data for secret
+
+secret_name=$(kubectl -n kube-system get sa argocd -o go-template='{{range .secrets}}{{.name}}{{"\n"}}{{end}}')
+
+kubectl -n kube-system get secrets ${secret_name} -o go-template='{{index .data "ca.crt"}}'
+kubectl -n kube-system get secrets ${secret_name} -o go-template='{{.data.token}}' | base64 -d
+
+   
+For multicluster deploys:
+    
+https://argocd-applicationset.readthedocs.io/en/stable/
