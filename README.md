@@ -151,7 +151,7 @@ or look at the resources documentation [here](https://cloud.google.com/config-co
 ## Managing GCP resources
 
 ### Creating a managed resource
-Given the correct project API permissions, you can now use `kubectl` operations to create, manage, modify and delete GCP resources. Firstly, make sure the correct APIs are enabled for the resources you are considering creating - wiethr via the console or if you wish, via KCC, e.g. for pubsub
+Given the correct project API permissions, you can now use `kubectl` operations to create, manage, modify and delete GCP resources. Firstly, make sure the correct APIs are enabled for the resources you are considering creating - whether via the console or, if you wish, via KCC, e.g. for pubsub
 
 Enable API [](samples/enable_pubsub.yaml)
 ```
