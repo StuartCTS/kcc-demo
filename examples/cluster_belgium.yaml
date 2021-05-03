@@ -40,6 +40,7 @@ metadata:
   labels:
     label-one: "value-one"
     label-two: "value-two"
+    label-three: "value-three"
   name: belgium
 spec:
   location: europe-west1-b

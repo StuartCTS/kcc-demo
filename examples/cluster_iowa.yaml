@@ -3,7 +3,7 @@ kind: ContainerNodePool
 metadata:
   labels:
     label-one: "value-one"
-  name: containernodepool-sample
+  name: containernodepool-iowa
 spec:
   location: us-central1-c
   autoscaling:
@@ -39,6 +39,7 @@ metadata:
     cnrm.cloud.google.com/remove-default-node-pool: "false"
   labels:
     label-one: "value-one"
+    label-two: "value-two"
   name: iowa
 spec:
   location: us-central1-c
