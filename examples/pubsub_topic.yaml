@@ -5,6 +5,6 @@ metadata:
   #   cnrm.cloud.google.com/deletion-policy: abandon
   labels:
     env: prod
-    director: lean
+    director: lumet
     producer: tarantino
   name: kcc-topic

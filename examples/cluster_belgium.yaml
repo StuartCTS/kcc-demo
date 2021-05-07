@@ -3,7 +3,7 @@ kind: ContainerNodePool
 metadata:
   labels:
     label-one: "value-one"
-  name: containernodepool-sample
+  name: containernodepool-belgium
 spec:
   location: europe-west1-b
   autoscaling:
